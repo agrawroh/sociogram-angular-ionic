@@ -13,7 +13,7 @@ angular.module('sociogram.controllers', [])
                     $state.go('app.login');
                 },
                 function () {
-                    alert('Revoke permissions failed');
+                    alert('Revoke Permissions Failed!');
                 });
         };
 
@@ -23,12 +23,12 @@ angular.module('sociogram.controllers', [])
 
         $scope.facebookLogin = function () {
 
-            OpenFB.login('email,read_stream,publish_stream').then(
+            OpenFB.login('email,public_profile,user_friends,user_photos,user_posts,publish_actions,user_birthday').then(
                 function () {
                     $location.path('/app/person/me/feed');
                 },
                 function () {
-                    alert('OpenFB login failed');
+                    alert('OpenFB Login Failed! Please Try Again...');
                 });
         };
 
@@ -41,7 +41,7 @@ angular.module('sociogram.controllers', [])
         $scope.share = function () {
             OpenFB.post('/me/feed', $scope.item)
                 .success(function () {
-                    $scope.status = "This item has been shared on OpenFB";
+                    $scope.status = "Item Shared Successfully on OpenFB.";
                 })
                 .error(function(data) {
                     alert(data.error.message);
@@ -51,13 +51,13 @@ angular.module('sociogram.controllers', [])
     })
 
     .controller('ProfileCtrl', function ($scope, OpenFB) {
-        OpenFB.get('/me').success(function (user) {
+        OpenFB.get('/me?fields=id,name,email,birthday,gender').success(function (user) {
             $scope.user = user;
         });
     })
 
     .controller('PersonCtrl', function ($scope, $stateParams, OpenFB) {
-        OpenFB.get('/' + $stateParams.personId).success(function (user) {
+        OpenFB.get('/' + $stateParams.personId + '?fields=id,name,email,birthday,gender').success(function (user) {
             $scope.user = user;
         });
     })
@@ -73,9 +73,15 @@ angular.module('sociogram.controllers', [])
     })
 
     .controller('MutualFriendsCtrl', function ($scope, $stateParams, OpenFB) {
-        OpenFB.get('/' + $stateParams.personId + '/mutualfriends', {limit: 50})
+        OpenFB.get('/' + $stateParams.personId + '?fields=context.fields%28mutual_friends%29', {limit: 50})
             .success(function (result) {
-                $scope.friends = result.data;
+                OpenFB.get('/' + result.context.id, {limit: 50})
+                    .success(function (result) {
+                      $scope.friends = result.mutual_friends.data;
+                    })
+                    .error(function(data) {
+                        alert(data.error.message);
+                    });
             })
             .error(function(data) {
                 alert(data.error.message);
@@ -86,7 +92,7 @@ angular.module('sociogram.controllers', [])
 
         $scope.show = function() {
             $scope.loading = $ionicLoading.show({
-                content: 'Loading feed...'
+                content: 'Loading User Feed(s)...'
             });
         };
         $scope.hide = function(){
@@ -95,7 +101,7 @@ angular.module('sociogram.controllers', [])
 
         function loadFeed() {
             $scope.show();
-            OpenFB.get('/' + $stateParams.personId + '/home', {limit: 30})
+            OpenFB.get('/me/feed', {limit: 30})
                 .success(function (result) {
                     $scope.hide();
                     $scope.items = result.data;
