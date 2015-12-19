@@ -13,10 +13,9 @@ angular.module('sociogram.controllers', [])
                     $state.go('app.login');
                 },
                 function () {
-                    alert('Revoke Permissions Failed!');
+                    alert('OpenFB : Revoke Permissions Failed!');
                 });
         };
-
     })
 
     .controller('LoginCtrl', function ($scope, $location, OpenFB) {
@@ -28,10 +27,9 @@ angular.module('sociogram.controllers', [])
                     $location.path('/app/person/me/feed');
                 },
                 function () {
-                    alert('OpenFB Login Failed! Please Try Again...');
+                    alert('OpenFB : Login Failed! Please Try Again...');
                 });
         };
-
     })
 
     .controller('ShareCtrl', function ($scope, OpenFB) {
@@ -41,29 +39,38 @@ angular.module('sociogram.controllers', [])
         $scope.share = function () {
             OpenFB.post('/me/feed', $scope.item)
                 .success(function () {
-                    $scope.status = "Item Shared Successfully on OpenFB.";
+                    $scope.status = "OpenFB : Item Shared Successfully!";
                 })
                 .error(function(data) {
                     alert(data.error.message);
                 });
         };
-
     })
 
     .controller('ProfileCtrl', function ($scope, OpenFB) {
-        OpenFB.get('/me?fields=id,name,email,birthday,gender').success(function (user) {
+        OpenFB.get('/me?fields=id,name,email,birthday').success(function (user) {
             $scope.user = user;
         });
     })
 
     .controller('PersonCtrl', function ($scope, $stateParams, OpenFB) {
-        OpenFB.get('/' + $stateParams.personId + '?fields=id,name,email,birthday,gender').success(function (user) {
+        OpenFB.get('/' + $stateParams.personId + '?fields=id,name,email,birthday').success(function (user) {
             $scope.user = user;
         });
     })
 
     .controller('FriendsCtrl', function ($scope, $stateParams, OpenFB) {
         OpenFB.get('/' + $stateParams.personId + '/friends', {limit: 50})
+            .success(function (result) {
+                $scope.friends = result.data;
+            })
+            .error(function(data) {
+                alert(data.error.message);
+            });
+    })
+
+    .controller('AllFriendsCtrl', function ($scope, $stateParams, OpenFB) {
+        OpenFB.get('/' + $stateParams.personId + '/taggable_friends', {limit: 50})
             .success(function (result) {
                 $scope.friends = result.data;
             })
@@ -117,5 +124,5 @@ angular.module('sociogram.controllers', [])
         $scope.doRefresh = loadFeed;
 
         loadFeed();
-
+        
     });

@@ -82,6 +82,17 @@ angular.module('sociogram', ['ionic', 'openfb', 'sociogram.controllers'])
                     }
                 }
             })
+
+            .state('app.allfriends', {
+                url: "/person/:personId/allfriends",
+                views: {
+                    'menuContent': {
+                        templateUrl: "templates/all-friend-list.html",
+                        controller: "AllFriendsCtrl"
+                    }
+                }
+            })
+
             .state('app.mutualfriends', {
                 url: "/person/:personId/mutualfriends",
                 views: {
@@ -114,4 +125,3 @@ angular.module('sociogram', ['ionic', 'openfb', 'sociogram.controllers'])
         $urlRouterProvider.otherwise('/app/person/me/feed');
 
     });
-
