@@ -2,6 +2,11 @@
 
 A sample application that demonstrates a lightweight approach to integrate with Facebook in your AngularJS / Ionic apps.
 
+*Change Log*
+1. Added configuration for Facebook App Secret in openfb-angular.js.
+2. Fixed API permission issues with read_stream, publish_stream.
+3. Fixed Mutual Friends/Feeds/Friends GET requests as per latest Facebook API v2.5.
+4. Added 'Taggable Friends' option which shows all the friends from user's friend list.
 
 ## Getting Started ##
 
