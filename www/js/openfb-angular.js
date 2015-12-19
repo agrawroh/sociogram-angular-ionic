@@ -167,6 +167,8 @@ angular.module('openfb', [])
                 params = obj.params || {};
 
             params['access_token'] = tokenStore['fbtoken'];
+            var hash = CryptoJS.HmacSHA256(tokenStore['fbtoken'],"YOUR_APP_SECRET");
+	          params['appsecret_proof'] = hash.toString();
 
             return $http({method: method, url: 'https://graph.facebook.com' + obj.path, params: params})
                 .error(function(data, status, headers, config) {
